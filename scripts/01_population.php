@@ -10,6 +10,10 @@ for($year = 2017; $year < 2021; $year++) {
     fgetcsv($fh, 4000);
     while($line = fgetcsv($fh, 4000)) {
         $line[1] = trim($line[1]);
+        if(substr($line[1], 0, 2) !== '67') {
+            continue;
+        }
+        
         if(!isset($population[$line[1]])) {
             $population[$line[1]] = [
                 $line[2] . $line[3]
@@ -20,8 +24,8 @@ for($year = 2017; $year < 2021; $year++) {
 }
 $changeSum = 0;
 $cunliCount = 0;
-$oFh = fopen(dirname(__DIR__) . '/population.csv', 'w');
-$keys = ['code', '201712', '201812', '201912', '202012', 'change'];
+$oFh = fopen(dirname(__DIR__) . '/tainan.csv', 'w');
+$keys = ['name', '201712', '201812', '201912', '202012', 'change'];
 fputcsv($oFh, $keys);
 foreach($population AS $code => $data) {
     if(!isset($population[$code][201812]) || !isset($population[$code][202012])) {
@@ -30,21 +34,26 @@ foreach($population AS $code => $data) {
         ++$cunliCount;
         $data['change'] = $population[$code]['change'] = $population[$code][202012] - $population[$code][201812];
         $changeSum += $population[$code]['change'];
+        
+    }
+    
+}
+
+usort($population, "cmp");
+
+foreach($population AS $code => $data) {
+    if(!isset($population[$code][201812]) || !isset($population[$code][202012])) {
+        continue;
     }
     foreach($keys AS $key) {
         if(!isset($data[$key])) {
             $data[$key] = '';
         }
     }
-    fputcsv($oFh, [$code, $data[201712], $data[201812], $data[201912], $data[202012], $data['change']]);
+    fputcsv($oFh, [$data[0], $data[201712], $data[201812], $data[201912], $data[202012], $data['change']]);
 }
-// echo ($changeSum / $cunliCount) . '/' . $cunliCount;
-// print_r($population);
-// usort($population, "cmp");
 
-// print_r($population);
-
-// function cmp($a, $b)
-// {
-//     return $a['change'] < $b['change'];
-// }
+function cmp($a, $b)
+{
+    return $a['change'] < $b['change'];
+}

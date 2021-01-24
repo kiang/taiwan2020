@@ -32,6 +32,7 @@ for($year = 2014; $year < 2021; $year++) {
 }
 foreach($population AS $code => $data) {
     $population[$code]['change'] = $population[$code][202012] - $population[$code][201812];
+    $population[$code]['rate'] = round($population[$code]['change'] / $population[$code][201812], 4) * 100;
 }
 usort($population, "cmp");
 

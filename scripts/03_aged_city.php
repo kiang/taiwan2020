@@ -13,9 +13,9 @@ for($year = 2014; $year < 2021; $year++) {
         }
         while($line = fgetcsv($fh, 4000)) {
             $data = array_combine($head, $line);
-            // if(false === strpos($data['區域別'], '南市')) {
-            //     continue;
-            // }
+            if(false === strpos($data['區域別'], '南市')) {
+                continue;
+            }
             $data['區域別'] = str_replace(array('　', ' '), '', $data['區域別']);
             if(!isset($population[$data['區域別']])) {
                 $population[$data['區域別']] = [
@@ -39,7 +39,7 @@ foreach($population AS $code => $data) {
 }
 usort($population, "cmp");
 
-$oFh = fopen(dirname(__DIR__) . '/taiwan_aged_area.csv', 'w');
+$oFh = fopen(dirname(__DIR__) . '/tainan_aged_area.csv', 'w');
 fputcsv($oFh, array_keys($population[0]));
 foreach($population AS $data) {
     fputcsv($oFh, $data);
